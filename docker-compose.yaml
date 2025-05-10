@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: myapp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ketiqz
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Aa11342!!
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:
