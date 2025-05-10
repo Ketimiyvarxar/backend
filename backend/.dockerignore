@@ -1,0 +1,23 @@
+# Node modules (we’ll install fresh inside the image)
+node_modules
+
+# Local env files—you don’t want these baked into the container
+.env
+.env.*
+
+# Git metadata
+.git
+.gitignore
+
+# Logs, OS files, IDE configs, etc.
+*.log
+.DS_Store
+.vscode/
+
+# Build artifacts (if you ever build locally)
+dist
+build
+package-lock.json
+
+# Dockerfile itself, so it won’t get recursively copied if you do COPY . .
+Dockerfile
