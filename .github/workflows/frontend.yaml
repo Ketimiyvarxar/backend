@@ -11,6 +11,10 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     permissions:
       contents: read
       packages: write
@@ -32,7 +36,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: .
           file: ./Dockerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/ketiqz-frontend:v1.0.0
