@@ -2,7 +2,7 @@
 require('dotenv').config();
 const express = require('express');
 
-const { swaggerUi, specs } = require('./config/swagger');
+const {swaggerUi, specs} = require('./config/swagger');
 
 
 const authRoutes = require('./routes/authRouter');
@@ -13,8 +13,7 @@ const adminRoutes = require('./routes/adminRouter');
 const app = express();
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use('/api/auth', authRoutes);
 

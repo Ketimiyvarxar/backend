@@ -10,4 +10,26 @@ async function getAllTopics() {
     return rows;
 }
 
-module.exports = {getAllTopics};
+async function getTopicById(topicId) {
+    const {rows} = await pool.query(
+        `SELECT id, name
+         FROM topics
+         WHERE id = $1`,
+        [topicId]
+    );
+    return rows[0];
+}
+
+async function createTopic(name) {
+    if (!name) return null;
+
+    const {rows} = await pool.query(
+        `INSERT INTO topics (name)
+         VALUES ($1)
+         RETURNING id, name`,
+        [name]
+    );
+    return rows[0];
+}
+
+module.exports = {getAllTopics, createTopic, getTopicById};
