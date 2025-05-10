@@ -11,7 +11,7 @@ const options = {
             description: 'Endpoints for auth, topics, quizzes & admin'
         },
         servers: [
-            { url: `http://localhost:${process.env.PORT || 5000}` }
+            { url: `/` }
         ],
         components: {
             securitySchemes: {
