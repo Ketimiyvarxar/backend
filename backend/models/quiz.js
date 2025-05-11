@@ -159,4 +159,41 @@ async function createQuiz(topicId, name, questions) {
     }
 }
 
-module.exports = {getQuizzesByTopicId, getQuizzById, createQuiz};
+async function isCompleted(userId, quizId) {
+    const { rows } = await pool.query(
+        `SELECT DISTINCT quiz_id
+         FROM quiz_attempts
+         WHERE user_id = $1 AND quiz_id = $2`,
+        [userId, quizId]
+    );
+    return rows.length > 0;
+}
+
+async function getAverageScore(userId, quizId) {
+    const { rows } = await pool.query(
+        `SELECT AVG(ratio) AS avg_ratio
+         FROM (SELECT qa.id,
+                      SUM(CASE WHEN aa.is_correct THEN 1 ELSE 0 END)::float
+                              / COUNT(aa.*) AS ratio
+               FROM quiz_attempts qa
+                        JOIN ketiqz.public.quiz_attempt_answers aa
+                             ON aa.attempt_id = qa.id
+               WHERE qa.user_id = $1
+                 AND qa.quiz_id = $2
+               GROUP BY qa.id) t`,
+        [userId, quizId]
+    );
+    return rows[0].avg_ratio ?? 0;
+}
+
+async function getAttemptCount(userId, quizId) {
+    const { rows } = await pool.query(
+        `SELECT COUNT(quiz_id) AS attempt_count
+         FROM quiz_attempts
+         WHERE user_id = $1 AND quiz_id = $2`,
+        [userId, quizId]
+    );
+    return rows[0].attempt_count ?? 0;
+}
+
+module.exports = {getQuizzesByTopicId, getQuizzById, createQuiz, isCompleted, getAverageScore, getAttemptCount};

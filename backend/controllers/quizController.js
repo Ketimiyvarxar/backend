@@ -1,4 +1,4 @@
-const {getQuizzesByTopicId, getQuizzById} = require('../models/quiz');
+const {getQuizzesByTopicId, getQuizzById, isCompleted, getAverageScore, getAttemptCount} = require('../models/quiz');
 
 const {
     createAttempt,
@@ -8,11 +8,26 @@ const {
 } = require('../models/quizAttempt');
 
 exports.getQuizzesByTopicId = async (req, res) => {
+    const user = req.user;
+
     try {
         const topicId = parseInt(req.params.topicId, 10);
         const quizzes = await getQuizzesByTopicId(topicId);
         if (quizzes.length === 0) {
             return res.status(404).json({msg: 'No quizzes found for this topic'});
+        }
+        // remove 'questions' from the quiz object
+        quizzes.forEach(q => {
+            q.questionCount = q.questions.length;
+            q.questions = undefined;
+        });
+        if (user) {
+            const userId = user.id;
+            for (const quiz of quizzes) {
+                quiz.isCompleted = await isCompleted(userId, quiz.quizId);
+                quiz.averageScore = await getAverageScore(userId, quiz.quizId);
+                quiz.attemptCount = Number(await getAttemptCount(userId, quiz.quizId));
+            }
         }
         res.json({quizzes});
     } catch (err) {
@@ -22,6 +37,7 @@ exports.getQuizzesByTopicId = async (req, res) => {
 };
 
 exports.getQuizById = async (req, res) => {
+    const user = req.user;
     try {
         const quizId = parseInt(req.params.quizId, 10);
         const quiz = await getQuizzById(quizId);
@@ -34,6 +50,12 @@ exports.getQuizById = async (req, res) => {
                 text: a.text
             }));
         });
+        if( user) {
+            const userId = user.id;
+            quiz[0].isCompleted = await isCompleted(userId, quizId);
+            quiz[0].averageScore = await getAverageScore(userId, quizId);
+            quiz[0].attemptCount = Number(await getAttemptCount(userId, quizId));
+        }
         res.json({quiz});
     } catch (err) {
         console.error(err);

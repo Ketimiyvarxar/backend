@@ -117,6 +117,7 @@ const {
     getAttempt
 } = require("../controllers/quizController");
 const authMiddleware = require('../middleware/authMiddleware');
+const notRequiredAuthMiddleware = require('../middleware/notRequiredAuthMiddleware');
 
 /**
  * @openapi
@@ -124,6 +125,8 @@ const authMiddleware = require('../middleware/authMiddleware');
  *   get:
  *     summary: List all topics
  *     tags: [Topics]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: Array of topic objects
@@ -139,7 +142,7 @@ const authMiddleware = require('../middleware/authMiddleware');
  *       500:
  *         description: Server error
  */
-router.get('/', getTopics);
+router.get('/', notRequiredAuthMiddleware, getTopics);
 
 /**
  * @openapi
@@ -147,6 +150,8 @@ router.get('/', getTopics);
  *   get:
  *     summary: List all quizzes for a topic
  *     tags: [Topics]
+ *     security:
+ *     - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: topicId
@@ -171,7 +176,7 @@ router.get('/', getTopics);
  *       500:
  *         description: Server error
  */
-router.get('/:topicId/quizzes', getQuizzesByTopicId);
+router.get('/:topicId/quizzes', notRequiredAuthMiddleware, getQuizzesByTopicId);
 
 /**
  * @openapi
@@ -179,6 +184,8 @@ router.get('/:topicId/quizzes', getQuizzesByTopicId);
  *   get:
  *     summary: Get detailed quiz by ID
  *     tags: [Topics]
+ *     security:
+ *     - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: quizId
@@ -203,7 +210,7 @@ router.get('/:topicId/quizzes', getQuizzesByTopicId);
  *       500:
  *         description: Server error
  */
-router.get('/quizz/:quizId', getQuizById);
+router.get('/quizz/:quizId', notRequiredAuthMiddleware, getQuizById);
 
 /**
  * @openapi
